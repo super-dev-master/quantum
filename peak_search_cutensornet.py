@@ -1,16 +1,18 @@
 from qiskit import QuantumCircuit
 from qiskit_aer import AerSimulator
+import numpy as np
 
+# Load your circuit (QASM file)
 qc = QuantumCircuit.from_qasm_file("your_circuit.qasm")
-qc.save_statevector()  # <-- Required in Qiskit 1.x and later
+qc.save_statevector()  # Needed in Qiskit 1.x+
 
-sim = AerSimulator(method="statevector")
+# Set up AerSimulator for GPU
+sim = AerSimulator(method="statevector", device="GPU")
 result = sim.run(qc).result()
 statevector = result.get_statevector()
 
-# Now you can do your peak search, e.g.
-import numpy as np
-probs = np.abs(statevector)**2
+# Peak search
+probs = np.abs(statevector) ** 2
 peak_index = np.argmax(probs)
 peak_bitstring = format(peak_index, f'0{qc.num_qubits}b')
 peak_prob = probs[peak_index]
