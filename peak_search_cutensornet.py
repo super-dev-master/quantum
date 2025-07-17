@@ -1,22 +1,17 @@
-from qiskit import QuantumCircuit, transpile
+from qiskit import QuantumCircuit
 from qiskit_aer import AerSimulator
-import numpy as np
 
-# Load your circuit (from QASM)
 qc = QuantumCircuit.from_qasm_file("your_circuit.qasm")
+qc.save_statevector()  # <-- Required in Qiskit 1.x and later
 
-# Transpile for simulator (optional, but often helps performance)
-sim = AerSimulator(method='statevector', device='GPU')
-qc = transpile(qc, sim)
-
-# Simulate to get statevector
+sim = AerSimulator(method="statevector")
 result = sim.run(qc).result()
 statevector = result.get_statevector()
 
-# Calculate probabilities for all bitstrings
-probs = np.abs(statevector) ** 2
+# Now you can do your peak search, e.g.
+import numpy as np
+probs = np.abs(statevector)**2
 peak_index = np.argmax(probs)
 peak_bitstring = format(peak_index, f'0{qc.num_qubits}b')
 peak_prob = probs[peak_index]
-
 print(f"Peak bitstring: {peak_bitstring}, probability: {peak_prob}")
