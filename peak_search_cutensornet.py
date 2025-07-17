@@ -6,10 +6,14 @@ import numpy as np
 qc = QuantumCircuit.from_qasm_file("your_circuit.qasm")
 qc.save_statevector()  # Needed in Qiskit 1.x+
 
+print("Saved StateVector")
+
 # Set up AerSimulator for GPU
 sim = AerSimulator(method="statevector", device="GPU")
 result = sim.run(qc).result()
 statevector = result.get_statevector()
+
+print("Got StateVector")
 
 # Peak search
 probs = np.abs(statevector) ** 2
